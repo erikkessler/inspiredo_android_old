@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">inspireDo</string>
+    <string name="title_section1">Today</string>
+    <string name="title_section2">Screentime</string>
+    <string name="title_section3">Whys</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="today_title">Today\'s Activities</string>
+    <string name="whys_title">My Whys</string>
+    <string name="screen_time_title">Today\'s Screentime</string>
+    <string name="today_history_title">History</string>
+    <string name="today_divider">/</string>
+    <string name="today_math_title">Math</string>
+    <string name="today_vocab_title">Vocab</string>
+
+</resources>
