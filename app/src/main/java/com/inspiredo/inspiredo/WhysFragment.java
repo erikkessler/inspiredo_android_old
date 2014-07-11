@@ -1,13 +1,26 @@
 package com.inspiredo.inspiredo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.URL;
 
 
 /**
@@ -19,7 +32,7 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  *
  */
-public class WhysFragment extends Fragment {
+public class WhysFragment extends MyAbstractFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,6 +43,19 @@ public class WhysFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    // Views
+    private ImageView mWhyImage;
+    private TextView mWhyTitle;
+
+    // Hold whys
+    private JSONArray mWhys;
+    private int mImageIndex;
+
+    // URL
+    private static final String API_URL = "https://script.google.com/macros/s/" +
+            "AKfycbxHQSc9ryLVy1LmEqQN_9z3yfH_dLjoJXvB0AB4rR8LTkY8wbc/exec";
+    private static final String API_PARAM_WHYS = "?what=whys";
 
     /**
      * Use this factory method to create a new instance of
@@ -64,8 +90,19 @@ public class WhysFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_whys, container, false);
+        View WhyView = inflater.inflate(R.layout.fragment_whys, container, false);
+
+        mWhyImage = (ImageView) WhyView.findViewById(R.id.why_image);
+        mWhyTitle= (TextView) WhyView.findViewById(R.id.why_title);
+        mWhyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mImageIndex++;
+                showPicture();
+            }
+        });
+        refreshData();
+        return WhyView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -94,6 +131,11 @@ public class WhysFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void refreshData() {
+        new WhysJSON().execute(API_URL + API_PARAM_WHYS);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -109,4 +151,85 @@ public class WhysFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    private class ImageTask extends AsyncTask<String, Void, Drawable> {
+
+
+        protected Drawable doInBackground(String... url) {
+            try {
+                InputStream is = (InputStream) new URL(url[0]).getContent();
+                Drawable d = Drawable.createFromStream(is, "src name");
+                return d;
+            } catch (Exception e) {
+                System.out.println("Exception = " + e);
+                return null;
+            }
+        }
+
+        protected void onProgressUpdate(Void... progress) {
+        }
+
+        protected void onPostExecute(Drawable result) {
+         /* Image loaded...*/
+
+            mWhyImage.setImageDrawable(result);
+
+        }
+    }
+
+    private class WhysJSON extends JSONTask {
+        private ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog.setMessage(getString(R.string.loading));
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
+
+        @Override
+        public void handleJSON(JSONObject json) {
+            if(json != null) {
+                try {
+                    mWhys = json.getJSONArray("whys");
+                    mImageIndex = 0;
+                    showPicture();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                Toast.makeText(
+                        getActivity(), "Error!", Toast.LENGTH_LONG
+                ).show();
+            }
+        }
+
+    }
+
+    private void showPicture() {
+        if (mImageIndex >= mWhys.length()){
+            Toast.makeText(
+                    getActivity(), "End of Whys!", Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+        try {
+            JSONArray why = mWhys.getJSONArray(mImageIndex);
+            if (!why.getString(1).isEmpty()) {
+                new ImageTask().execute(why.getString(1));
+            }
+            mWhyTitle.setText(why.getString(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

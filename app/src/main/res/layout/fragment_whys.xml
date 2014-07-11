@@ -4,10 +4,38 @@
     android:layout_height="match_parent"
     tools:context="com.inspiredo.inspiredo.WhysFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/whys_title" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/whys_title"
+            android:textColor="@android:color/holo_blue_dark"
+            android:typeface="sans"
+            android:clickable="false"
+            android:editable="false"
+            android:textSize="40sp"
+            android:padding="@dimen/today_activity_padding" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/why_image"
+            android:clickable="true"
+            android:layout_gravity="center_horizontal"
+            android:minHeight="400dp"
+            android:minWidth="400dp" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/why_title"
+            android:gravity="center" />
+
+    </LinearLayout>
 
 </FrameLayout>

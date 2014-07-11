@@ -17,5 +17,10 @@
     <string name="today_divider">/</string>
     <string name="today_math_title">Math</string>
     <string name="today_vocab_title">Vocab</string>
+    <string name="nice_work">Nice Work!</string>
+    <string name="st_used_title">Used</string>
+    <string name="st_avail_title">Available</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading...</string>
 
 </resources>

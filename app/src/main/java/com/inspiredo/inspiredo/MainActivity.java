@@ -27,6 +27,7 @@ public class MainActivity extends Activity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private MyAbstractFragment mFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -51,24 +52,24 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         Log.d("MainActivity", new Integer(position).toString());
-        Fragment fragment = null;
+        mFragment = null;
         switch (position) {
             case 0:
-                fragment = new TodayFragment();
+                mFragment = new ScreenTimeFragment();
                 break;
             case 1:
-                fragment = new ScreenTimeFragment();
+                mFragment = new TodayFragment();
                 break;
             case 2:
-                fragment = new WhysFragment();
+                mFragment = new WhysFragment();
                 break;
         }
 
-        if (fragment != null) {
+        if (mFragment != null) {
             // update the main content by replacing fragments
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, fragment)
+                    .replace(R.id.container, mFragment)
                     .commit();
         } else {
             Log.e("MainActivity", "Error creating fragment");
@@ -118,7 +119,11 @@ public class MainActivity extends Activity
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_refresh){
+            mFragment.refreshData();
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

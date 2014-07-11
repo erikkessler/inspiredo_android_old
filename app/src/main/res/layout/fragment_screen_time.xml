@@ -4,10 +4,90 @@
     android:layout_height="match_parent"
     tools:context="com.inspiredo.inspiredo.ScreenTimeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/screen_time_title" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/screen_time_title"
+            android:textColor="@android:color/holo_blue_dark"
+            android:typeface="sans"
+            android:clickable="false"
+            android:editable="false"
+            android:textSize="40sp"
+            android:padding="@dimen/today_activity_padding" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingRight="@dimen/today_activity_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/st_used_title"
+                    android:id="@+id/st_used_title"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="-"
+                    android:id="@+id/st_used"
+                    android:layout_below="@+id/st_used_title"
+                    android:layout_alignRight="@+id/st_used_title"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_purple" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingLeft="@dimen/today_activity_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/st_avail_title"
+                    android:id="@+id/st_avail_title"
+                    android:layout_toRightOf="@+id/st_used_title"
+                    android:textSize="30sp"
+                    android:password="false"
+                    android:phoneNumber="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="-"
+                    android:id="@+id/st_avail"
+                    android:layout_below="@+id/st_avail_title"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="30sp"
+                    android:password="false"
+                    android:phoneNumber="false"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_green_dark" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

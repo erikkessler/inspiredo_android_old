@@ -1,6 +1,7 @@
 package com.inspiredo.inspiredo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,7 +27,7 @@ import org.json.JSONObject;
  * Use the {@link TodayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TodayFragment extends Fragment {
+public class TodayFragment extends MyAbstractFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,7 +36,10 @@ public class TodayFragment extends Fragment {
     // URL of the API
     private static final String API_URL = "https://script.google.com/macros/s/" +
             "AKfycbxHQSc9ryLVy1LmEqQN_9z3yfH_dLjoJXvB0AB4rR8LTkY8wbc/exec";
-    private static final String API_PARAM = "?what=todo";
+    private static final String API_PARAM_TODO = "?what=todo";
+    private static final String API_PARAM_HIST = "?what=history";
+    private static final String API_PARAM_MATH = "?what=math";
+    private static final String API_PARAM_VOCAB = "?what=vocab";
 
 
     // TODO: Rename and change types of parameters
@@ -108,8 +112,7 @@ public class TodayFragment extends Fragment {
         mMathBtn.setOnClickListener(new ClickListener());
         mVocabBtn.setOnClickListener(new ClickListener());
 
-        TodayJSON task = new TodayJSON();
-        task.execute(API_URL + API_PARAM);
+        refreshData();
         return TodayView;
     }
 
@@ -139,6 +142,12 @@ public class TodayFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void refreshData() {
+        TodayJSON task = new TodayJSON();
+        task.execute(API_URL + API_PARAM_TODO);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -155,6 +164,23 @@ public class TodayFragment extends Fragment {
     }
 
     private class TodayJSON extends JSONTask {
+
+        private ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog.setMessage(getString(R.string.loading));
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
 
         @Override
         public void handleJSON(JSONObject json) {
@@ -187,17 +213,51 @@ public class TodayFragment extends Fragment {
 
     }
 
+    private class PostJSON extends JSONTask {
+
+
+        @Override
+        public void handleJSON(JSONObject json) {
+            Log.d("PostJSON", json.toString());
+
+            String response = "";
+            String what = "";
+            try {
+                response = json.getString("status");
+                what = json.getString("what");
+            } catch (JSONException e) {
+                response = "fail";
+            }
+            if (json != null && response.equals("success")) {
+                if (what.equals("history")) {
+                    incrementCount(mHistCount);
+                } else if (what.equals("math")) {
+                    incrementCount(mMathCount);
+                } else if (what.equals("vocab")) {
+                    incrementCount(mVocabCount);
+                }
+                Toast.makeText(getActivity(), "Nice Work!",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        }
+
+        private void incrementCount(TextView v) {
+            v.setText(Integer.parseInt(v.getText().toString()) + 1 + "");
+        }
+    }
+
     private class ClickListener implements View.OnClickListener {
 
 
         @Override
         public void onClick(View v) {
             if (v == mHistoryBtn) {
-                Toast.makeText(getActivity(), "History", Toast.LENGTH_SHORT).show();
+                new PostJSON().execute(API_URL + API_PARAM_HIST, "POST");
             } else if (v == mMathBtn) {
-                Toast.makeText(getActivity(), "Math", Toast.LENGTH_SHORT).show();
+                new PostJSON().execute(API_URL + API_PARAM_MATH, "POST");
             } else if (v == mVocabBtn) {
-                Toast.makeText(getActivity(), "Vocab", Toast.LENGTH_SHORT).show();
+                new PostJSON().execute(API_URL + API_PARAM_VOCAB, "POST");
             } else {
                 Toast.makeText(getActivity(), "You clicked me!", Toast.LENGTH_SHORT).show();
             }

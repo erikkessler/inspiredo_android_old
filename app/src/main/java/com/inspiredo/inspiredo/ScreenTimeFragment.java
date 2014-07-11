@@ -1,13 +1,16 @@
 package com.inspiredo.inspiredo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import org.json.JSONObject;
 
 
 /**
@@ -19,11 +22,20 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  *
  */
-public class ScreenTimeFragment extends Fragment {
+public class ScreenTimeFragment extends MyAbstractFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    // URL
+    private static final String API_URL = "https://script.google.com/macros/s/" +
+            "AKfycbxHQSc9ryLVy1LmEqQN_9z3yfH_dLjoJXvB0AB4rR8LTkY8wbc/exec";
+    private static final String API_PARAM_ST = "?what=screentime";
+
+    // Views
+    private TextView mSTUsed;
+    private TextView mSTAvail;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -65,7 +77,14 @@ public class ScreenTimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_screen_time, container, false);
+        View ScreenTimeView = inflater.inflate(R.layout.fragment_screen_time, container, false);
+
+        mSTAvail = (TextView) ScreenTimeView.findViewById(R.id.st_avail);
+        mSTUsed = (TextView) ScreenTimeView.findViewById(R.id.st_used);
+
+        refreshData();
+
+        return ScreenTimeView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -109,4 +128,43 @@ public class ScreenTimeFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    private class STJSON extends JSONTask {
+        private ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog.setMessage(getString(R.string.loading));
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
+
+        @Override
+        public void handleJSON(JSONObject json) {
+            if (json != null) {
+                try {
+                    JSONObject stJSON = json.getJSONObject("screentime");
+                    mSTAvail.setText(stJSON.getString("available"));
+                    mSTUsed.setText(stJSON.getString("used"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                mSTUsed.setText("-");
+                mSTAvail.setText("-");
+            }
+        }
+    }
+
+    public void refreshData() {
+        STJSON task = new STJSON();
+        task.execute(API_URL + API_PARAM_ST);
+    }
 }
